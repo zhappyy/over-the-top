@@ -63,6 +63,8 @@ public class ShakeActivity extends Activity {
         brokenView = BrokenView.add2Window(this);
         animator = brokenView.getAnimator(mAdView);
 
+        mWaveView = (WaveView) findViewById(R.id.waveView);
+
 //        updateEnergyProgressBar();
     }
 
@@ -78,13 +80,22 @@ public class ShakeActivity extends Activity {
                         finish();
                     } else {
                         float value = Math.abs(sensorInfo.getSensorX()) + Math.abs(sensorInfo.getSensorY());
-                        float finalValue = Math.abs(value) / 40;
-                        if (finalValue > 1.0f)
-                            finalValue = 1.0f;
-                        Log.e("zy", "sensorInfo:" + value);
-                        mEnergyProgressBar.setPer(finalValue);
+                        float finalValue = Math.abs(value) ;
+                        /*if (finalValue > 1.0f)
+                            finalValue = 1.0f;*/
+                        Log.e("zy", "sensorInfo:" + finalValue);
+//                        mEnergyProgressBar.setPer(finalValue);
 
-                        mSumValue += finalValue;
+                        if (finalValue > 10.0f) {
+//                            mWaveView.setSpeed(finalValue);
+                            /*mWaveView.setLevel(finalValue * 0.8f);
+                            mWaveView.setSpeed(10.8f);*/
+                        } else {
+                            /*mWaveView.setSpeed(30.8f);
+                            mWaveView.setLevel(0.04f);*/
+                        }
+
+
                         if (mSumValue /5 > 1.0f) {
                             mAdView.setPer(1.0f);
                             if (animator == null) {
@@ -95,7 +106,7 @@ public class ShakeActivity extends Activity {
                             mEnergyProgressBar.setVisibility(View.GONE);
                         } else {
 
-                            mAdView.setPer(mSumValue/5.0f);
+//                            mAdView.setPer(mSumValue/5.0f);
                         }
                     }
                 }
