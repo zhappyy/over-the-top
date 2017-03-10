@@ -16,6 +16,7 @@ import java.io.PrintWriter;
 import java.io.UTFDataFormatException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
 
 /**
  * Created by zhangyong on 17-3-1.
@@ -24,7 +25,6 @@ import java.net.Socket;
 public class SocketServer
 {
     private ServerSocket server;
-    private Socket socket;
     private InputStream in;
     private ObjectInputStream mInObject;
     private ObjectOutputStream mOutObject;
@@ -32,7 +32,9 @@ public class SocketServer
     private String str=null;
     private boolean isClint=false;
     private Handler mServerHandler;
+    private Socket currentSocket;
 
+    private HashMap<Socket, Handler> map = new HashMap<>();
     /**
      * @steps bind();绑定端口号
      * @effect 初始化服务端
@@ -41,7 +43,6 @@ public class SocketServer
     public SocketServer(int port) {
         try {
             server= new ServerSocket ( port );
-            Log.e("zy", "server is null :" + (server ==null));
             isClint=true;
         }catch (IOException e){
             e.printStackTrace ();
@@ -57,46 +58,48 @@ public class SocketServer
             @Override
             public void run() {
                 try {
-                    /**
-                     * accept();
-                     * 接受请求
-                     * */
-                    Log.e("zy", "socket server:" + (server == null));
-                    socket=server.accept();
-                    Log.e("zy", "socket socket:" + (socket == null));
-                    /**得到输入流*/
-                    mInObject = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
-                    mOutObject = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-                    /**
-                     * 实现数据循环接收
-                     **/
-                    Log.e("zy", "mInObject:" + (mInObject == null));
-                    while (!socket.isClosed()) {
-                        try{
-                            SensorInfo sensorInfo = (SensorInfo) mInObject.readObject();
-                            Log.e("zy", "sensorInfo :" + sensorInfo.getSensorX());
-                            if (sensorInfo != null) {
-                                returnMessage(sensorInfo);
-                            } else
-                                break;
-                        } catch (Exception e) {
-                            socket.close();
-                            break;
-                        }
+                    while (true) {
+                        Socket socket = server.accept();
+                        Log.d("Hunter", "socket = " + socket.toString());
+                        new Thread(new SocketRunnable(socket)).start();
                     }
                 } catch (IOException e) {
-                        e.printStackTrace ( );
-                        socket.isClosed ();
+                    e.printStackTrace ( );
                 }
             }
         } ).start ();
+    }
+
+    private class SocketRunnable implements Runnable {
+
+        private Socket socket;
+
+        public  SocketRunnable(Socket socket) {
+            this.socket = socket;
+        }
+
+        @Override
+        public void run() {
+            try {
+                mInObject = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
+                while (true) {
+                    SensorInfo sensorInfo = (SensorInfo) mInObject.readObject();
+                    if (sensorInfo != null) {
+                        returnMessage(sensorInfo);
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void disconnectSocket() {
         if (null != server) {
             try {
                 server.close();
-                socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

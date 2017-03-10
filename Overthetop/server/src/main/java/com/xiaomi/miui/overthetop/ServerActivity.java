@@ -14,7 +14,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -64,7 +63,7 @@ public class ServerActivity extends AppCompatActivity implements SensorEventList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_server);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
@@ -81,7 +80,7 @@ public class ServerActivity extends AppCompatActivity implements SensorEventList
     @Override
     protected void onPause() {
         super.onPause();
-        server.disconnectSocket();
+//        server.disconnectSocket();
         server = null;
     }
 
