@@ -7,6 +7,8 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.View;
@@ -15,7 +17,11 @@ import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.xiaomi.miui.myapplication.Global;
 import com.xiaomi.miui.myapplication.R;
+import com.xiaomi.miui.myapplication.SocketTcpClient;
+import com.xiaomi.miui.myapplication.sound.utils.World;
+import com.xiaomi.miui.paronamo.SensorInfo;
 
 
 public class ShakeActivity extends Activity implements SensorEventListener {
@@ -25,6 +31,9 @@ public class ShakeActivity extends Activity implements SensorEventListener {
     private LinearLayout topLayout, bottomLayout;
     private ImageView topLineIv, bottomLineIv;
     private boolean isShake = false;
+    private SocketTcpClient mClient;
+    private int msgWhat = 1004;
+    private static int sensorCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +48,16 @@ public class ShakeActivity extends Activity implements SensorEventListener {
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerateSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         vibrator = (Vibrator) getSystemService(Service.VIBRATOR_SERVICE);
+
+        initSocketClient();
+    }
+
+    private void initSocketClient() {
+        mClient = new SocketTcpClient();
+        //服务端的IP地址和端口号
+        mClient.clintValue (this, Global.SERVER_IP, 6666);
+        //开启客户端接收消息线程
+        mClient.openClientThread();
     }
 
     @Override
@@ -56,6 +75,24 @@ public class ShakeActivity extends Activity implements SensorEventListener {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+//        mHandler.removeMessages(101);
+        mClient.sendMsg(new SensorInfo(0, 0, 0));
+    }
+
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == msgWhat) {
+                mClient.sendMsg((SensorInfo) msg.obj);
+                return;
+            }
+        }
+    };
+
+    @Override
     public void onSensorChanged(SensorEvent event) {
         // TODO Auto-generated method stub
         int sensorType = event.sensor.getType();
@@ -65,6 +102,20 @@ public class ShakeActivity extends Activity implements SensorEventListener {
         Log.e("Hunter", "x = " + values[0] + " y = " + values[1] + " z = " + values[2]);
 
         if (sensorType == Sensor.TYPE_ACCELEROMETER) {
+            Log.e("zy", "sensorInfo:00000");
+            sensorCount++;
+            if (sensorCount > 5) {
+
+                sensorCount = 0;
+                SensorInfo info = new SensorInfo(values[1],values[0],values[2]);
+                float value = info.getSensorX() + info.getSensorY() + info.getSensorZ();
+                Log.e("zy", "sensorInfo:" + value);
+                Message msg = new Message();
+                msg.what = msgWhat;
+                msg.obj = info;
+                mHandler.sendMessage(msg);
+            }
+
             if ((Math.abs(values[0]) > 17 || Math.abs(values[1]) > 17 || Math
                     .abs(values[2]) > 17) && !isShake) {
                 isShake = true;

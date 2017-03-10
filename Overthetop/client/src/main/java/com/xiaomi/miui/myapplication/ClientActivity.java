@@ -62,7 +62,7 @@ public class ClientActivity extends Activity implements SensorEventListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_client);
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -72,10 +72,17 @@ public class ClientActivity extends Activity implements SensorEventListener {
         initSensor();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mHandler.removeMessages(101);
+        mClient.sendMsg(new SensorInfo(0, 0, 0));
+    }
+
     private void initSocketClient() {
         mClient = new SocketTcpClient();
         //服务端的IP地址和端口号
-        mClient.clintValue (this, SERVER_IP ,6666);
+        mClient.clintValue (this, Global.SERVER_IP ,6666);
         //开启客户端接收消息线程
         mClient.openClientThread();
 

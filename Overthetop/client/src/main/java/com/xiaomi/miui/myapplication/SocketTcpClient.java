@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.xiaomi.miui.paronamo.SensorInfo;
 
@@ -14,6 +13,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -40,8 +40,7 @@ public class SocketTcpClient
      * @effect 开启线程建立连接开启客户端
      * */
     public void openClientThread(){
-        thread=new Thread ( new Runnable ( )
-        {
+        thread=new Thread ( new Runnable ( ) {
             @Override
             public void run() {
                 try {
@@ -52,15 +51,14 @@ public class SocketTcpClient
                     client=new Socket ( site,port );
                     Log.e("zy", "client:" + (client == null));
 //                    client.setSoTimeout ( 5000 );//设置超时时间
-                    if (client!=null) {
+                    if (client.isConnected()) {
                         isClient=true;
                         forOut();
 //                        forIn ();
                     }else {
+                        Log.e("Hunter", "connect fail");
                         isClient=false;
-                        Toast.makeText ( context,"网络连接失败",Toast.LENGTH_LONG ).show ();
                     }
-                    Log.i ( "hahah","site="+site+" ,port="+port );
                 }catch (UnknownHostException e) {
                     e.printStackTrace ();
                     Log.i ( "socket","6" );
@@ -134,17 +132,18 @@ public class SocketTcpClient
             @Override
             public void run()
             {
-                if (client!=null)
-                {
-                    try {
-                        mOutObject.writeObject(sensorInfo);
-                        mOutObject.flush();
-//                        mOutObject.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                try {
+                    if (client == null) {
+                        client = new Socket(site, port);
                     }
-                }else {
-                    isClient=false;
+                    if (!client.isConnected()) {
+                        client.connect(new InetSocketAddress(site, port));
+                    }
+                    mOutObject.writeObject(sensorInfo);
+                    mOutObject.flush();
+//                        mOutObject.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         } ).start ();
@@ -155,4 +154,11 @@ public class SocketTcpClient
         mHandler = handler;
     }
 
+    public void close() {
+        try {
+            client.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

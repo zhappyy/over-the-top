@@ -1,2 +1,5 @@
 # over-the-top
 移动终端间交互同步界面信息
+
+paonamo实现３６０全景图的library；
+server和client各自加载好全景图，server不断监测设备Ａ陀螺仪数据变化和触摸变化，通过socket把数据发送给client设备Ｂ，从而保持设备Ａ和设备Ｂ界面的同步。

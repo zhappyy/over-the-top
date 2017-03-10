@@ -14,7 +14,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -64,7 +63,7 @@ public class ServerActivity extends AppCompatActivity implements SensorEventList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_server);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
@@ -81,24 +80,30 @@ public class ServerActivity extends AppCompatActivity implements SensorEventList
     @Override
     protected void onPause() {
         super.onPause();
-        server.disconnectSocket();
-        server = null;
+//        server.disconnectSocket();
+//        server = null;
     }
 
     private void initSocketServer() {
-        server = new SocketServer(6666);
-        server.beginListen();
-        server.setHandler(new Handler() {
+        ServerApplication.server.setHandler(new Handler() {
             @Override
             public void handleMessage(Message msg) {
-                 SensorInfo sensorInfo = (SensorInfo) msg.obj;
-                 Log.e("zy", "sensorInfo.getSensorX():" + sensorInfo.getSensorX());
-                if (sensorInfo != null) {
-                    mCommonGLSurfaceView.setXangle(sensorInfo.getSensorX());
-                    mCommonGLSurfaceView.setYangle(sensorInfo.getSensorY());
+                SensorInfo sensorInfo = (SensorInfo) msg.obj;
+                Log.e("zy", "sensorInfo.getSensorX():" + sensorInfo.getSensorX());
+                if (sensorInfo != null ) {
+                    if (sensorInfo.getSensorX() == 0) {
+                        finish();
+                    } else {
+                        mCommonGLSurfaceView.setXangle(sensorInfo.getSensorX());
+                        mCommonGLSurfaceView.setYangle(sensorInfo.getSensorY());
+                    }
                 }
             }
         });
+        /*server = new SocketServer(6666);
+        server.beginListen();
+        server.setHandler();*/
+
     }
 
     private void initView() {
