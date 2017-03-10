@@ -8,7 +8,9 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Button;
 
+
 import com.xiaomi.miui.overthetop.Shake.ShakeActivity;
+
 import com.xiaomi.miui.paronamo.SensorInfo;
 
 /**

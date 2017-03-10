@@ -18,15 +18,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name=".ClientActivity">
-
+        </activity>
+        <activity android:name=".shake.ShakeActivity">
         </activity>
 
         <activity android:name=".LaunchActivity">
         </activity>
-        <activity android:name=".shake.ShakeActivity">
-        </activity>
+
 
         <activity android:name=".sound.SoundActivity" >
         </activity>

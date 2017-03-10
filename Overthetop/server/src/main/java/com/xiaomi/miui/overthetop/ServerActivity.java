@@ -81,7 +81,8 @@ public class ServerActivity extends AppCompatActivity implements SensorEventList
     protected void onPause() {
         super.onPause();
 //        server.disconnectSocket();
-//        server = null;
+
+        server = null;
     }
 
     private void initSocketServer() {
