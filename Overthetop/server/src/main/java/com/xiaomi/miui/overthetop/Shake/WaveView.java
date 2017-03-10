@@ -31,6 +31,7 @@ import android.view.View;
  * @author chenjing
  *
  */
+
 public class WaveView extends View
 {
 
@@ -59,7 +60,8 @@ public class WaveView extends View
     /**
      * 水波平移速度
      */
-    public static final float SPEED = 5.0f;
+    public float mSpeed = 10.7f;
+    public float mLevel = 0.04f;
 
     private List<Point> mPointsList;
     private Paint mPaint;
@@ -69,26 +71,36 @@ public class WaveView extends View
 
     private Timer timer;
     private MyTimerTask mTask;
+
+    public void setSpeed(float speed) {
+        mSpeed = speed;
+    }
+
+    public void setLevel(float level) {
+        mLevel = level;
+    }
+
+
+
     Handler updateHandler = new Handler()
     {
 
         @Override
         public void handleMessage(Message msg)
         {
-            switch (msg.what) {
-                case 101:
-                    // 记录平移总位移
-                    int speed = ((Integer) msg.obj).intValue();
-                    mMoveLen += speed;
+            // 记录平移总位移
+/*            switch(msg.what) {
+                case 10086:*/
+                    mMoveLen += 20.0f;
                     // 水位上升
-                    mLevelLine -= 0.8f;
+                    mLevelLine -= 0.3f;
                     if (mLevelLine < 0)
                         mLevelLine = 0;
-                    mLeftSide += speed;
+                    mLeftSide += mSpeed;
                     // 波形平移
                     for (int i = 0; i < mPointsList.size(); i++)
                     {
-                        mPointsList.get(i).setX(mPointsList.get(i).getX() + speed);
+                        mPointsList.get(i).setX(mPointsList.get(i).getX() + mSpeed);
                         switch (i % 4)
                         {
                             case 0:
@@ -110,9 +122,12 @@ public class WaveView extends View
                         resetPoints();
                     }
                     invalidate();
+//                    requestLayout();
+//                    break;
+//            }
+
             }
 
-        }
 
     };
 
@@ -173,7 +188,7 @@ public class WaveView extends View
     {
         super.onWindowFocusChanged(hasWindowFocus);
         // 开始波动
-//        start();
+        start();
     }
 
     private void start()
