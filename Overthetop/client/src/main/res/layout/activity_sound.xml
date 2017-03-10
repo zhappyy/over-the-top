@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     >
 
-    <me.daei.soundmeter.widget.SoundDiscView
+    <com.xiaomi.miui.myapplication.sound.SoundDiscView
         android:id="@+id/soundDiscView"
         android:layout_centerInParent="true"
         android:layout_width="344dp"
