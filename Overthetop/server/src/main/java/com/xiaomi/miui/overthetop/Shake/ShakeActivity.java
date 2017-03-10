@@ -11,6 +11,7 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Process;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -31,8 +32,8 @@ public class ShakeActivity extends Activity {
 
     AdProcessView mAdView;
     WaveView mWaveView;
-    AdEnergyView mEnergyProgressBar;
-    ProgressBar mProcessProgressBar;
+    ProgressBar mEnergyProgressBar;
+    VerticalProgressBar mVerticalProgressBar;
 
     int mOldEnergy;
     float mCurrentEnergy;
@@ -65,10 +66,12 @@ public class ShakeActivity extends Activity {
         animator = brokenView.getAnimator(mAdView);
 
         mWaveView = (WaveView) findViewById(R.id.waveView);
+        mVerticalProgressBar = (VerticalProgressBar) findViewById(R.id.progressBar);
 
 //        updateEnergyProgressBar();
     }
 
+    private float mOldProgress = 0.0f;
     private void initSocketServer() {
         ServerApplication.server.setHandler(new Handler() {
             @Override
@@ -82,11 +85,15 @@ public class ShakeActivity extends Activity {
 //                    } else {
                         float value = Math.abs(sensorInfo.getSensorX()) + Math.abs(sensorInfo.getSensorY()) + Math.abs(sensorInfo.getSensorZ());
                         float finalValue = Math.abs(value) ;
-                        /*if (finalValue > 1.0f)
-                            finalValue = 1.0f;*/
                         Log.e("zy", "sensorInfo:" + finalValue);
-//                        mEnergyProgressBar.setPer(finalValue);
-
+                    ValueAnimator valueAnimator = ValueAnimator.ofInt(0, (int) value * 2);
+                    valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator animation) {
+                            mVerticalProgressBar.setProgress((int)animation.getAnimatedValue());
+                        }
+                    });
+                    valueAnimator.start();
                         if (finalValue > 10.0f) {
 //                            mWaveView.setSpeed(finalValue);
                             /*mWaveView.setLevel(finalValue * 0.8f);
@@ -101,11 +108,13 @@ public class ShakeActivity extends Activity {
                                 Point point = new Point(1000, 500);
                                 animator = brokenView.createAnimator(mAdView, point, new BrokenConfig());
                             }
+                            mWaveView.setVisibility(View.GONE);
+                            mVerticalProgressBar.setVisibility(View.GONE);
                             start(animator);
                             animator.addListener(new Animator.AnimatorListener() {
                                 @Override
                                 public void onAnimationStart(Animator animator) {
-                                    mWaveView.setVisibility(View.INVISIBLE);
+
                                 }
 
                                 @Override
@@ -156,7 +165,6 @@ public class ShakeActivity extends Activity {
                                 public void run() {
 //                                    mProcessProgressBar
                                     mAdView.setPer(finalI);
-                                    mEnergyProgressBar.setPer(finalI);
                                 }
                             });
                         } catch (Exception e) {

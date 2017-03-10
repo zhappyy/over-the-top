@@ -13,4 +13,11 @@
         android:layout_height="match_parent"
         android:id="@+id/waveView"/>
 
+    <com.xiaomi.miui.overthetop.Shake.VerticalProgressBar
+        android:layout_width="150dp"
+        android:layout_height="match_parent"
+        android:id="@+id/progressBar"
+        android:layout_gravity="right"
+        />
+
 </FrameLayout>
