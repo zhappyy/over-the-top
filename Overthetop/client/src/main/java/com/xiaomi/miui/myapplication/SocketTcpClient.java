@@ -139,6 +139,7 @@ public class SocketTcpClient
                     if (!client.isConnected()) {
                         client.connect(new InetSocketAddress(site, port));
                     }
+                    Log.e("Hunter", "client sendMessage");
                     mOutObject.writeObject(sensorInfo);
                     mOutObject.flush();
 //                        mOutObject.close();

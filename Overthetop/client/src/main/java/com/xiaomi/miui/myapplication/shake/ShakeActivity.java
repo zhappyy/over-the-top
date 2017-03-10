@@ -17,6 +17,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.xiaomi.miui.myapplication.ClientApplication;
 import com.xiaomi.miui.myapplication.Global;
 import com.xiaomi.miui.myapplication.R;
 import com.xiaomi.miui.myapplication.SocketTcpClient;
@@ -31,7 +32,6 @@ public class ShakeActivity extends Activity implements SensorEventListener {
     private LinearLayout topLayout, bottomLayout;
     private ImageView topLineIv, bottomLineIv;
     private boolean isShake = false;
-    private SocketTcpClient mClient;
     private int msgWhat = 1004;
     private static int sensorCount = 0;
 
@@ -53,16 +53,6 @@ public class ShakeActivity extends Activity implements SensorEventListener {
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerateSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         vibrator = (Vibrator) getSystemService(Service.VIBRATOR_SERVICE);
-
-        initSocketClient();
-    }
-
-    private void initSocketClient() {
-        mClient = new SocketTcpClient();
-        //服务端的IP地址和端口号
-        mClient.clintValue(this, Global.SERVER_IP, 6666);
-        //开启客户端接收消息线程
-        mClient.openClientThread();
     }
 
     @Override
@@ -83,7 +73,7 @@ public class ShakeActivity extends Activity implements SensorEventListener {
     protected void onDestroy() {
         super.onDestroy();
 //        mHandler.removeMessages(101);
-        mClient.sendMsg(new SensorInfo(0, 0, 0));
+        ClientApplication.mClient.sendMsg(new SensorInfo(0, 0, 0));
     }
 
     private Handler mHandler = new Handler() {
@@ -91,7 +81,7 @@ public class ShakeActivity extends Activity implements SensorEventListener {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             if (msg.what == msgWhat) {
-                mClient.sendMsg((SensorInfo) msg.obj);
+                ClientApplication.mClient.sendMsg((SensorInfo) msg.obj);
                 return;
             }
         }

@@ -139,7 +139,7 @@ public class SocketServer
         Log.e("zy", "returnMessage");
         Message msg=new Message ();
         msg.obj=sensorInfo;
-        mServerHandler.sendMessage ( msg );
+        mServerHandler.sendMessage (msg);
     }
 
     public void setHandler(Handler handler) {

@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
-
 import com.xiaomi.miui.paronamo.CommonGLSurfaceView;
 import com.xiaomi.miui.paronamo.SensorInfo;
 
@@ -26,21 +25,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
 
 
 public class ClientActivity extends Activity implements SensorEventListener {
 
     private CommonGLSurfaceView mCommonGLSurfaceView;
     private LinearLayout mViewGroup;
-
-    private static String mIp;
-    private static String SERVER_IP = "10.232.65.110"; //10.232.67.122  10.232.64.208  10.232.64.208  10.232.64.175
-    private static final int SERVER_PORT = 8088;
-    private InetAddress mInetAddress = null;
-    private MulticastSocket mMulticastSocket = null;
-    private SocketTcpClient mClient;
 
     private float mSensorPrevidousY;
     private float mSensorPrevidousX;
@@ -67,7 +57,6 @@ public class ClientActivity extends Activity implements SensorEventListener {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        initSocketClient();
         initView();
         initSensor();
     }
@@ -76,26 +65,7 @@ public class ClientActivity extends Activity implements SensorEventListener {
     protected void onDestroy() {
         super.onDestroy();
         mHandler.removeMessages(101);
-        mClient.sendMsg(new SensorInfo(0, 0, 0));
-    }
-
-    private void initSocketClient() {
-        mClient = new SocketTcpClient();
-        //服务端的IP地址和端口号
-        mClient.clintValue (this, Global.SERVER_IP ,6666);
-        //开启客户端接收消息线程
-        mClient.openClientThread();
-
-        mClient.setHandler(new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                /*SensorInfo sensorInfo = (SensorInfo) msg.obj;
-                if (sensorInfo != null) {
-                    mCommonGLSurfaceView.setXangle(sensorInfo.getSensorX());
-                    mCommonGLSurfaceView.setYangle(sensorInfo.getSensorY());
-                }*/
-            }
-        });
+        ClientApplication.mClient.sendMsg(new SensorInfo(0, 0, 0));
     }
 
     private void initView() {
@@ -163,7 +133,7 @@ public class ClientActivity extends Activity implements SensorEventListener {
                 if (touchCount > 20) {
                     SensorInfo info = new SensorInfo((float) (mCommonGLSurfaceView.getXangle() + dy * 0.3),
                             (float) (mCommonGLSurfaceView.getYangle() + dx * 0.3), 0);
-                    mClient.sendMsg(info);
+                    ClientApplication.mClient.sendMsg(info);
                     touchCount = 0;
                 }
                 break;
@@ -247,7 +217,7 @@ public class ClientActivity extends Activity implements SensorEventListener {
                         sensorCount++;
                         // 控制通信频率
                         if (sensorCount > 10) {
-                            mClient.sendMsg(sendInfo);
+                            ClientApplication.mClient.sendMsg(sendInfo);
                             sensorCount = 0;
                         }
                         mSensorPrevidousY = y;// 记录触控笔位置

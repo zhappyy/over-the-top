@@ -23,8 +23,6 @@ public class MainActivity extends Activity {
     private Button paronamoBtn;
     private Button soundBtn;
 
-    private SocketTcpClient mClient;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,7 +33,7 @@ public class MainActivity extends Activity {
         shakeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mClient.sendMsg(new SensorInfo(1, 1, 1));
+                ClientApplication.mClient.sendMsg(new SensorInfo(1, 1, 1));
                 Intent intent = new Intent(MainActivity.this, ShakeActivity.class);
                 startActivity(intent);
             }
@@ -43,7 +41,7 @@ public class MainActivity extends Activity {
         paronamoBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mClient.sendMsg(new SensorInfo(2, 2, 2));
+                ClientApplication.mClient.sendMsg(new SensorInfo(2, 2, 2));
                 Intent intent = new Intent(MainActivity.this, ClientActivity.class);
                 startActivity(intent);
             }
@@ -51,21 +49,16 @@ public class MainActivity extends Activity {
         soundBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mClient.sendMsg(new SensorInfo(3, 3, 3));
+                ClientApplication.mClient.sendMsg(new SensorInfo(3, 3, 3));
                 Intent intent = new Intent(MainActivity.this, SoundActivity.class);
                 startActivity(intent);
             }
         });
-        initSocketClient();
     }
 
-    private void initSocketClient() {
-        mClient = new SocketTcpClient();
-        //服务端的IP地址和端口号
-        mClient.clintValue (this, Global.SERVER_IP, 6666);
-        //开启客户端接收消息线程
-        mClient.openClientThread();
-
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -75,7 +68,7 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        mClient.sendMsg(new SensorInfo(4, 4, 4));
+        ClientApplication.mClient.sendMsg(new SensorInfo(4, 4, 4));
         super.onDestroy();
     }
 }

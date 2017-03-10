@@ -5,12 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.widget.Button;
 
-
 import com.xiaomi.miui.overthetop.Shake.ShakeActivity;
-
 import com.xiaomi.miui.paronamo.SensorInfo;
 
 /**
@@ -53,7 +50,6 @@ public class MainActivity extends Activity {
                         Intent intent = new Intent(MainActivity.this, ServerActivity.class);
                         startActivity(intent);
                     } else if (value == 3) {
-                        Log.e("Hunter", "jump to Broken");
                         soundBtn.setSelected(true);
                         Intent intent = new Intent(MainActivity.this, BrokenActivity.class);
                         startActivity(intent);
