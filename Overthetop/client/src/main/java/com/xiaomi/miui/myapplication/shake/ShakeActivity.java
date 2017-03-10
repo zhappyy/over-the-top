@@ -35,6 +35,11 @@ public class ShakeActivity extends Activity implements SensorEventListener {
     private int msgWhat = 1004;
     private static int sensorCount = 0;
 
+    private static boolean isFirstCoord = true;
+    private float old_X = 0;
+    private float old_Y = 0;
+    private float old_Z = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +60,7 @@ public class ShakeActivity extends Activity implements SensorEventListener {
     private void initSocketClient() {
         mClient = new SocketTcpClient();
         //服务端的IP地址和端口号
-        mClient.clintValue (this, Global.SERVER_IP, 6666);
+        mClient.clintValue(this, Global.SERVER_IP, 6666);
         //开启客户端接收消息线程
         mClient.openClientThread();
     }
@@ -100,14 +105,37 @@ public class ShakeActivity extends Activity implements SensorEventListener {
         float[] values = event.values;
 
         Log.e("Hunter", "x = " + values[0] + " y = " + values[1] + " z = " + values[2]);
+        if (isFirstCoord) {
+            old_X = values[0];
+            old_Y = values[1];
+            old_Z = values[2];
+            Log.e("Hunter", "firstCoord");
+            isFirstCoord = false;
+            return;
+        } else {
+            Log.e("Hunter", "non firstCoord");
+            float delta_x = values[0] - old_X;
+            float delta_y = values[1] - old_Y;
+            float delta_z = values[2] - old_Z;
+            float delta = delta_x * delta_x + delta_y * delta_y + delta_z * delta_z;
+            Log.e("delta", "(" + delta_x + "," + delta_y + "," + delta_z + ")^2=" + delta);
+            old_X = values[0];
+            old_Y = values[1];
+            old_Z = values[2];
+            if (delta < 5) {
+                return;
+            }
+            Log.e("delta pass", "(" + delta_x + "," + delta_y + "," + delta_z + ")^2=" + delta);
+        }
 
         if (sensorType == Sensor.TYPE_ACCELEROMETER) {
+            Log.e("Hunter TYPE", "x = " + values[0] + " y = " + values[1] + " z = " + values[2]);
             Log.e("zy", "sensorInfo:00000");
             sensorCount++;
             if (sensorCount > 5) {
 
                 sensorCount = 0;
-                SensorInfo info = new SensorInfo(values[1],values[0],values[2]);
+                SensorInfo info = new SensorInfo(values[1], values[0], values[2]);
                 float value = info.getSensorX() + info.getSensorY() + info.getSensorZ();
                 Log.e("zy", "sensorInfo:" + value);
                 Message msg = new Message();
