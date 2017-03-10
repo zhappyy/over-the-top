@@ -8,14 +8,8 @@
         android:layout_height="match_parent"
         android:id="@+id/adView" />
 
-    <com.xiaomi.miui.overthetop.Shake.AdEnergyView
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_gravity="center"
-        android:id="@+id/energy" />
-
     <com.xiaomi.miui.overthetop.Shake.WaveView
-        android:layout_width="200dp"
+        android:layout_width="150dp"
         android:layout_height="match_parent"
         android:id="@+id/waveView"/>
 

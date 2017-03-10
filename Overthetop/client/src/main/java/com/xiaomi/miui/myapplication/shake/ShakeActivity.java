@@ -93,6 +93,9 @@ public class ShakeActivity extends Activity implements SensorEventListener {
         int sensorType = event.sensor.getType();
         // values[0]:X轴，values[1]：Y轴，values[2]：Z轴
         float[] values = event.values;
+        float delta_x = 0;
+        float delta_y = 0;
+        float delta_z = 0;
 
         Log.e("Hunter", "x = " + values[0] + " y = " + values[1] + " z = " + values[2]);
         if (isFirstCoord) {
@@ -104,9 +107,9 @@ public class ShakeActivity extends Activity implements SensorEventListener {
             return;
         } else {
             Log.e("Hunter", "non firstCoord");
-            float delta_x = values[0] - old_X;
-            float delta_y = values[1] - old_Y;
-            float delta_z = values[2] - old_Z;
+            delta_x = values[0] - old_X;
+            delta_y = values[1] - old_Y;
+            delta_z = values[2] - old_Z;
             float delta = delta_x * delta_x + delta_y * delta_y + delta_z * delta_z;
             Log.e("delta", "(" + delta_x + "," + delta_y + "," + delta_z + ")^2=" + delta);
             old_X = values[0];
@@ -125,7 +128,7 @@ public class ShakeActivity extends Activity implements SensorEventListener {
             if (sensorCount > 5) {
 
                 sensorCount = 0;
-                SensorInfo info = new SensorInfo(values[1], values[0], values[2]);
+                SensorInfo info = new SensorInfo(delta_x, delta_y, delta_z);
                 float value = info.getSensorX() + info.getSensorY() + info.getSensorZ();
                 Log.e("zy", "sensorInfo:" + value);
                 Message msg = new Message();

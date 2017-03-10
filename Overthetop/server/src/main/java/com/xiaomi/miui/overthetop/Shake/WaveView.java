@@ -80,7 +80,13 @@ public class WaveView extends View
         mLevel = level;
     }
 
+    public void minusToLevelLine(float delta) {
+        mLevelLine -= delta;
+    }
 
+    public float getLevelLine() {
+        return mLevelLine;
+    }
 
     Handler updateHandler = new Handler()
     {
@@ -93,7 +99,7 @@ public class WaveView extends View
                 case 10086:*/
                     mMoveLen += 20.0f;
                     // 水位上升
-                    mLevelLine -= 0.3f;
+//                    mLevelLine -= 0.3f;
                     if (mLevelLine < 0)
                         mLevelLine = 0;
                     mLeftSide += mSpeed;

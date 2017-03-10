@@ -1,5 +1,8 @@
 package com.xiaomi.miui.overthetop.Shake;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -56,8 +59,6 @@ public class ShakeActivity extends Activity {
         mOldProcess = 0.0f;
         mCurrentProcess = 0.0f;
 
-        mEnergyProgressBar = (AdEnergyView) findViewById(R.id.energy);
-        mEnergyProgressBar.setImageDrawable(getResources().getDrawable(R.drawable.xiaomilogo));
         mAdView = (AdProcessView) findViewById(R.id.adView);
         mAdView.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.mipmap.xiaomi_note2,720, 480));
         brokenView = BrokenView.add2Window(this);
@@ -76,10 +77,10 @@ public class ShakeActivity extends Activity {
                 Log.e("zy", "sensorInfo.getSensorX():" + sensorInfo.getSensorX() + "sensorInfo.getSensorY():" + sensorInfo.getSensorY() +
                         "sensorInfo.getSensorZ():" + sensorInfo.getSensorZ());
                 if (sensorInfo != null ) {
-                    if (sensorInfo.getSensorX() == 0) {
-                        finish();
-                    } else {
-                        float value = Math.abs(sensorInfo.getSensorX()) + Math.abs(sensorInfo.getSensorY());
+//                    if (sensorInfo.getSensorX() == 0) {
+//                        finish();
+//                    } else {
+                        float value = Math.abs(sensorInfo.getSensorX()) + Math.abs(sensorInfo.getSensorY()) + Math.abs(sensorInfo.getSensorZ());
                         float finalValue = Math.abs(value) ;
                         /*if (finalValue > 1.0f)
                             finalValue = 1.0f;*/
@@ -94,23 +95,39 @@ public class ShakeActivity extends Activity {
                             /*mWaveView.setSpeed(30.8f);
                             mWaveView.setLevel(0.04f);*/
                         }
-
-
-                        if (mSumValue /5 > 1.0f) {
-                            mAdView.setPer(1.0f);
+                        mWaveView.minusToLevelLine(finalValue/1.0f);
+                        if (mWaveView.getLevelLine() <= 0.0f) {
                             if (animator == null) {
                                 Point point = new Point(1000, 500);
                                 animator = brokenView.createAnimator(mAdView, point, new BrokenConfig());
                             }
                             start(animator);
-                            mEnergyProgressBar.setVisibility(View.GONE);
-                        } else {
+                            animator.addListener(new Animator.AnimatorListener() {
+                                @Override
+                                public void onAnimationStart(Animator animator) {
+                                    mWaveView.setVisibility(View.INVISIBLE);
+                                }
 
-//                            mAdView.setPer(mSumValue/5.0f);
+                                @Override
+                                public void onAnimationEnd(Animator animator) {
+                                    finish();
+                                }
+
+                                @Override
+                                public void onAnimationCancel(Animator animator) {
+
+                                }
+
+                                @Override
+                                public void onAnimationRepeat(Animator animator) {
+
+                                }
+                            });
+
                         }
                     }
                 }
-            }
+//            }
         });
     }
 
