@@ -60,7 +60,9 @@ public class ShakeActivity extends Activity {
         mCurrentProcess = 0.0f;
 
         mAdView = (AdProcessView) findViewById(R.id.adView);
-        mAdView.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.mipmap.xiaomi_note2,720, 480));
+//        mAdView.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.mipmap.xiaomi_note2,720, 480));
+//        mAdView.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.mipmap.wanglaoji,1920, 1080));
+        mAdView.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.mipmap.toyota,3840, 2160));
         brokenView = BrokenView.add2Window(this);
         animator = brokenView.getAnimator(mAdView);
 
