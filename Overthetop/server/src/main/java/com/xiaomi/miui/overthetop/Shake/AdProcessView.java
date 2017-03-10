@@ -68,7 +68,7 @@ public class AdProcessView extends ImageView {
         //画遮蔽层
         canvas.drawRect(0,y,layer_w,getHeight(),paintLayer);
         //画文字
-        canvas.drawText(perStr, getWidth() / 2 - textbound.width() / 2, getHeight() / 2 + textbound.height() / 2, textPaint);
+//        canvas.drawText(perStr, getWidth() / 2 - textbound.width() / 2, getHeight() / 2 + textbound.height() / 2, textPaint);
     }
 
     public void setPer(float per){
